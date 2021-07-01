@@ -3,11 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	// "educative.io-urlshortener/store"
-	// "urlshortener/store"
-	// "../store"
-	// "store"
-	s "store"
+	s "educative.io-urlshortener/store"
 )
 
 const addForm = `
@@ -19,11 +15,11 @@ URL: <input type="text" name="url">
 </html></body>
 `
 
-var store = s.NewURLStore("store.gob")
+var storeVar = s.NewURLStore("store.gob")
 
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Path[1:]
-	url := store.Get(key)
+	url := storeVar.Get(key)
 	if url == "" {
 		http.NotFound(w, r)
 		return
@@ -38,7 +34,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, addForm)
 		return
 	}
-	key := store.Put(url) //Put it in the store using our Put method on the store.
+	key := storeVar.Put(url) //Put it in the store using our Put method on the store.
 	//send the corresponding short URL to the user.
 	fmt.Fprintf(w, "%s", key)
 }
@@ -46,5 +42,5 @@ func Add(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", Redirect)
 	http.HandleFunc("/add", Add)
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":8080", nil)
 }

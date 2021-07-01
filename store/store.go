@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"encoding/gob"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	k "educative.io-urlshortener/key"
 )
 
 type record struct {
@@ -71,7 +72,7 @@ func (s *URLStore) Put(url string) string {
 	//The for loop retries the Set until it is successful (meaning that we have generated
 	//a not yet existing short URL).
 	for {
-		key := genKey(s.Count())
+		key := k.GenKey(s.Count())
 		if s.Set(key, url) {
 			if err := s.save(key, url); err != nil {
 				log.Println("Error saving to URLStore:", err)
