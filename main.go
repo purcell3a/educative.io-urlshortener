@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"https://github.com/purcell3a/educative.io-urlshortener/store"
+	"https://github.com/purcell3a/educative.io-urlshortener/key"
+
 )
 
 const addForm = `
