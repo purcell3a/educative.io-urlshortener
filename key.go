@@ -1,4 +1,4 @@
-package key
+package main
 
 var keyChar = []byte("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 

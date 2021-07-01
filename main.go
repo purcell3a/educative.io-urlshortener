@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"github.com/purcell3a/educative.io-urlshortener/store"
-	"github.com/purcell3a/educative.io-urlshortener/key"
-
+	// "educative.io-urlshortener/store"
+	// "urlshortener/store"
+	// "../store"
+	// "store"
+	s "store"
 )
 
 const addForm = `
@@ -17,7 +19,7 @@ URL: <input type="text" name="url">
 </html></body>
 `
 
-var store = NewURLStore("store.gob")
+var store = s.NewURLStore("store.gob")
 
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Path[1:]
