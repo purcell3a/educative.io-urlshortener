@@ -22,6 +22,15 @@ type URLStore struct {
 	mu   sync.RWMutex  //An RWMutex has two locks: one for readers and one for writers
 }
 
+//In return, we make a URLStore literal with our map initialized. The lock doesn’t need to be specifically 
+//initialized; this is the standard way in Go of making struct objects. & is the address-of operator,
+// to return a pointer because NewURLStore returns the pointer *URLStore. We call this function to make a 
+//URLStore variable store:
+func NewURLStore() *URLStore {
+	return &URLStore{ urls: make(map[string]string) }
+}
+
+
 func (s *URLStore) Get(key string) string{ // this fun locks and unlocks to keep processes from
 	defer s.mu.RLock()						  // being interrupted by requests
 	return s.urls[key]
