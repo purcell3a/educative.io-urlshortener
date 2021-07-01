@@ -28,14 +28,13 @@ func (s *URLStore) Get(key string) string{ // this fun locks and unlocks to keep
 }
 
 func (s *URLStore) Set(key, url string) bool{ //The Set function needs both a key and a URL and has to
-	s.mu.Lock()								//use the write lock Lock() to exclude any other updates at the 
+	s.mu.Lock()		
+	defer s.mu.Unlock()						//use the write lock Lock() to exclude any other updates at the 
 	_, present := s.urls[key]				//same time. It returns a boolean true or false value to indicate 
 	if present {							//whether the Set was successful or not:
-		s.mu.Unlock()
 		return false
 	}
 	s.urls[key] = url 
-	s.mu.Unlock()
 	return true
 }
 
