@@ -23,10 +23,8 @@ type URLStore struct {
 }
 
 func (s *URLStore) Get(key string) string{ // this fun locks and unlocks to keep processes from
-	s.mu.RLock()						  // being interrupted by requests
-	url := s.urls[key]
-	s.mu.RUnlock()
-	return url
+	defer s.mu.RLock()						  // being interrupted by requests
+	return s.urls[key]
 }
 
 func (s *URLStore) Set(key, url string) bool{ //The Set function needs both a key and a URL and has to
