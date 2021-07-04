@@ -16,22 +16,29 @@ type record struct {
 type URLStore struct {
 	urls map[string]string // map from short to long URLs
 	mu   sync.RWMutex      //An RWMutex has two locks: one for readers and one for writers
-	file *os.File
+	// file *os.File
+	save chan record
 }
 
 // The NewURLStore function now takes a filename argument, opens the
 // file, and stores the *os.File value in the file field of our
 // URLStore variable store, here, locally called s.
+const saveQueueLength = 1000
 func NewURLStore(filename string) *URLStore {
-	s := &URLStore{urls: make(map[string]string)}
-	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatal("Error opening URLStore:", err)
+	// save := make(chan record, saveQueLength)
+	s := &URLStore{
+		urls: make(map[string]string)
+		save: make(chan record, saveQueLength)
 	}
-	s.file = f
-	if err := s.load(); err != nil {
+	// f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	// if err != nil {
+	// 	log.Fatal("Error opening URLStore:", err)
+	// }
+	// s.file = f
+	if err := s.load(filename); err != nil {
 		log.Println("Error loading data in URLStore:", err)
 	}
+	go s.saveLoop(filename)  //the saveLoop method starts a new goroutine here with the key word GO
 	return s
 }
 
@@ -74,13 +81,14 @@ func (s *URLStore) Put(url string) string {
 	for {
 		key := k.GenKey(s.Count())
 		if s.Set(key, url) {
-			if err := s.save(key, url); err != nil {
-				log.Println("Error saving to URLStore:", err)
-			}
+			s.save <- record{key, url}  //this sends a record to our buffered channel called save
 			return key
+			// if err := s.save(key, url); err != nil {
+			// 	log.Println("Error saving to URLStore:", err)
+			// }
 		}
 	}
-	return ""
+	panic("should never get here")
 }
 
 func (s *URLStore) Set(key, url string) bool { //The Set function needs both a key and a URL and has to
